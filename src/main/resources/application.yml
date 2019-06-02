@@ -1,0 +1,9 @@
+logging:
+  level:
+    org.springframework.web: DEBUG
+spring:
+  data:
+    mongodb:
+      host: localhost
+      database: user
+      port: 27017
