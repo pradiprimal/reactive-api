@@ -10,9 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
+
 @RestController
-@RequestMapping("api/student")
+@RequestMapping("api/")
 public class StudentController {
+
+    private static final String STUDENT_BASE_API = "student";
 
     private final StudentRepository detailsRepository;
 
@@ -21,18 +25,18 @@ public class StudentController {
         this.detailsRepository = detailsRepository;
     }
 
-    @GetMapping(name = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "stream/student", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<StudentDetails> getUserDetails() {
-        return detailsRepository.findAll();
+        return detailsRepository.findAll().delayElements(Duration.ofSeconds(2));
     }
 
 
-    @PostMapping
+    @PostMapping(STUDENT_BASE_API)
     public Mono<StudentDetails> saveStudentDetails(@RequestBody StudentDetails studentDetails) {
         return detailsRepository.save(studentDetails);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(STUDENT_BASE_API + "/{id}")
     public Mono<ResponseEntity<StudentDetails>> updateStudentDetails(@PathVariable String id,
                                                                      @RequestBody StudentDetails studentDetails) {
         return detailsRepository.findById(id)
@@ -44,14 +48,14 @@ public class StudentController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(STUDENT_BASE_API + "/{id}")
     public Mono<ResponseEntity<StudentDetails>> getStudentDetails(@PathVariable String id) {
         return detailsRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(STUDENT_BASE_API + "/{id}")
     public Mono<ResponseEntity<Void>> deleteStudentDetails(@PathVariable String id) {
         return detailsRepository.findById(id)
                 .flatMap(studentDetails -> detailsRepository.delete(studentDetails)
@@ -59,7 +63,7 @@ public class StudentController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @GetMapping
+    @GetMapping(STUDENT_BASE_API)
     public Flux<StudentDetails> getAllStudents() {
         return detailsRepository.findAll();
     }

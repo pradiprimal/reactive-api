@@ -56,6 +56,9 @@ public class StudentDetails implements Serializable {
         this.address = address;
     }
 
+    public StudentDetails() {
+    }
+
     public StudentDetails(String name, String email, String phone) {
         this.name = name;
         this.email = email;
